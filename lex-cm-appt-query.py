@@ -1,0 +1,181 @@
+from __future__ import print_function  # Python 2/3 compatibility
+import boto3
+import json
+import decimal
+from boto3.dynamodb.conditions import Key, Attr
+
+
+# Helper class to convert a DynamoDB item to JSON.
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            if o % 1 > 0:
+                return float(o)
+            else:
+                return int(o)
+        return super(DecimalEncoder, self).default(o)
+
+
+# dynamodb = boto3.resource('dynamodb', region_name='ca-central-1')
+# table = dynamodb.Table('Table')
+# print("print Table")
+
+
+
+#def updateDB(appointment_time, date, appointment_type, userId):
+def queryDB(userId):
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+    dynamoTable = dynamodb.Table('ApptBot')
+
+
+# response = table.query(
+#     KeyConditionExpression=Key('UID').eq(1)
+# )
+
+# for i in response['Items']:
+# #     print(i['Date'], ":", i['title'])
+# # for i in response['Items']:
+#     print(json.dumps(i, cls=DecimalEncoder))
+
+userId = intent_request['userId']
+
+response = table.get_item(
+    Key={
+        'UID': 'userId'
+    }
+)
+
+item = response['Item']
+print(item)
+
+
+def make_appointment(intent_request):
+    """
+    Performs dialog management and fulfillment for booking a dentists appointment.
+
+    Beyond fulfillment, the implementation for this intent demonstrates the following:
+    1) Use of elicitSlot in slot validation and re-prompting
+    2) Use of confirmIntent to support the confirmation of inferred slot values, when confirmation is required
+    on the bot model and the inferred slot values fully specify the intent.
+    """
+    appointment_type = intent_request['currentIntent']['slots']['AppointmentType']
+    date = intent_request['currentIntent']['slots']['Date']
+    appointment_time = intent_request['currentIntent']['slots']['Time']
+    source = intent_request['invocationSource']
+    # output_session_attributes = intent_request['sessionAttributes'] if intent_request[
+    #                                                                        'sessionAttributes'] is not None else {}
+    # booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
+    userId = intent_request['userId']
+
+    queryDB(userId)
+    #
+    # if source == 'DialogCodeHook':
+    #     # Perform basic validation on the supplied input slots.
+    #     slots = intent_request['currentIntent']['slots']
+    #     validation_result = validate_book_appointment(appointment_type, date, appointment_time)
+    #     if not validation_result['isValid']:
+    #         slots[validation_result['violatedSlot']] = None
+    #         return elicit_slot(
+    #             output_session_attributes,
+    #             intent_request['currentIntent']['name'],
+    #             slots,
+    #             validation_result['violatedSlot'],
+    #             validation_result['message'],
+    #             build_response_card(
+    #                 'Specify {}'.format(validation_result['violatedSlot']),
+    #                 validation_result['message']['content'],
+    #                 build_options(validation_result['violatedSlot'], appointment_type, date, booking_map)
+    #             )
+    #         )
+    #
+    #     if not appointment_type:
+    #         return elicit_slot(
+    #             output_session_attributes,
+    #             intent_request['currentIntent']['name'],
+    #             intent_request['currentIntent']['slots'],
+    #             'AppointmentType',
+    #             {'contentType': 'PlainText', 'content': 'What type of appointment would you like to schedule?'},
+    #             build_response_card(
+    #                 'Specify Appointment Type', 'What type of appointment would you like to schedule?',
+    #                 build_options('AppointmentType', appointment_type, date, None)
+    #             )
+    #         )
+    #
+    #     if appointment_type and not date:
+    #         return elicit_slot(
+    #             output_session_attributes,
+    #             intent_request['currentIntent']['name'],
+    #             intent_request['currentIntent']['slots'],
+    #             'Date',
+    #             {'contentType': 'PlainText',
+    #              'content': 'When would you like to schedule your {}?'.format(appointment_type)},
+    #             build_response_card(
+    #                 'Specify Date',
+    #                 'When would you like to schedule your {}?'.format(appointment_type),
+    #                 build_options('Date', appointment_type, date, None)
+    #             )
+    #         )
+    #
+    #     updateDB(
+    #         appointment_time,
+    #         date,
+    #         appointment_type,
+    #         userId
+    # #     )  # SL
+    #
+    # else:
+    #     # This is not treated as an error as this code sample supports functionality either as fulfillment or dialog code hook.
+    #     logger.debug('Availabilities for {} were null at fulfillment time.  '
+    #                  'This should have been initialized if this function was configured as the dialog code hook'.format(
+    #         date))
+    #
+    # return close(
+    #     output_session_attributes,
+    #     'Fulfilled',
+    #     {
+    #         'contentType': 'PlainText',
+    #         'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(
+    #             build_time_output_string(appointment_time), date)
+    #     }
+    # )
+    #
+
+#####
+
+
+""" --- Intents --- """
+
+
+def dispatch(intent_request):
+    """
+    Called when the user specifies an intent for this bot.
+    """
+
+    logger.debug(
+        'dispatch userId={}, intentName={}'.format(intent_request['userId'], intent_request['currentIntent']['name']))
+
+    intent_name = intent_request['currentIntent']['name']
+
+    # Dispatch to your bot's intent handlers
+    # SL
+    if intent_name == 'MakeAppointmentQuery':
+        return check_appointment(intent_request)
+    # if intent_name == 'MakeAppointment':
+    #     return make_appointment(intent_request)
+    raise Exception('Intent with name ' + intent_name + ' not supported')
+
+
+""" --- Main handler --- """
+
+
+def lambda_handler(event, context):
+    """
+    Route the incoming request based on intent.
+    The JSON body of the request is provided in the event slot.
+    """
+    # By default, treat the user request as coming from the America/New_York time zone.
+    os.environ['TZ'] = 'America/New_York'
+    time.tzset()
+    logger.debug('event.bot.name={}'.format(event['bot']['name']))
+    logger.debug(event)
+    return dispatch(event)
