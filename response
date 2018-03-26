@@ -1,0 +1,75 @@
+'url_path': '/', 'method': u'POST'}
+[DEBUG]	2018-03-23T00:21:02.428Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Event request-created.dynamodb.GetItem: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7f34f6346bd0>>
+[DEBUG]	2018-03-23T00:21:02.428Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Event choose-signer.dynamodb.GetItem: calling handler <function set_operation_specific_signer at 0x7f34f687dde8>
+[DEBUG]	2018-03-23T00:21:02.440Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Calculating signature using v4 auth.
+[DEBUG]	2018-03-23T00:21:02.441Z	119b0500-2e30-11e8-92c7-9f4d146941eb	CanonicalRequest:
+POST
+/
+
+content-type:application/x-amz-json-1.0
+host:dynamodb.us-east-1.amazonaws.com
+x-amz-date:20180323T002102Z
+x-amz-security-token:FQoDYXdzECEaDBICG5dG0M/3grX4ziLqAVpFfm4Tis+ctewZr4uixbcgkeFNL4qfxZieuct0K/CB8iJKAHITOUpZMB4HjHUiFc/NzEgs6PgXrFsQsHWofxcpWmbYNCjEo9DWVpE8dxOnr3c5K6gwXrsj3ObDijJHHs1JAAqa6lzLQ4yWAyhCU4abWeszV55egdCgSu1x5gT6Gv55s01Gwshdq5V1adGZj5TxqAxxjR1qVNN0fLmOgecb1erSb52ul/7wtPZ2vKRWEpoqIEKbEyPgXLo1q1txWD3IRamNcJPkJYZ9rTqcZlWEATOVjCqK7Ynj7QXAQC+zEtcb9eKECQXQiCi6i9HVBQ==
+x-amz-target:DynamoDB_20120810.GetItem
+
+content-type;host;x-amz-date;x-amz-security-token;x-amz-target
+e1f625dc8fbcbcc9e7bbed79e775632a640d365ee1ce71a43d87468c27e8798c
+[DEBUG]	2018-03-23T00:21:02.441Z	119b0500-2e30-11e8-92c7-9f4d146941eb	StringToSign:
+AWS4-HMAC-SHA256
+20180323T002102Z
+20180323/us-east-1/dynamodb/aws4_request
+f312dd3767634fd9a09047b7ae52ddea25468213b27406df7071936ad3c852d2
+[DEBUG]	2018-03-23T00:21:02.441Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Signature:
+fd5c2f802b54636755e23e7ffd12832a08ae8b0875a81b52c02bfd96ba0e85f7
+[DEBUG]	2018-03-23T00:21:02.441Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Sending http request: <PreparedRequest [POST]>
+[INFO]	2018-03-23T00:21:02.442Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Resetting dropped connection: dynamodb.us-east-1.amazonaws.com
+[DEBUG]	2018-03-23T00:21:02.603Z	119b0500-2e30-11e8-92c7-9f4d146941eb	"POST / HTTP/1.1" 200 2
+[DEBUG]	2018-03-23T00:21:02.603Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Response headers: {'x-amzn-requestid': 'UVMQJB6920M34S34KM9V81PD1JVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '2', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '2745614147', 'date': 'Fri, 23 Mar 2018 00:21:02 GMT', 'content-type': 'application/x-amz-json-1.0'}
+[DEBUG]	2018-03-23T00:21:02.604Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Response body:
+{}
+[DEBUG]	2018-03-23T00:21:02.604Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Event needs-retry.dynamodb.GetItem: calling handler <botocore.retryhandler.RetryHandler object at 0x7f34f653be90>
+[DEBUG]	2018-03-23T00:21:02.604Z	119b0500-2e30-11e8-92c7-9f4d146941eb	No retry needed.
+[DEBUG]	2018-03-23T00:21:02.604Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Event after-call.dynamodb.GetItem: calling handler <bound method TransformationInjector.inject_attribute_value_output of <boto3.dynamodb.transform.TransformationInjector object at 0x7f34f64f4ad0>>
+[DEBUG]	2018-03-23T00:21:02.604Z	119b0500-2e30-11e8-92c7-9f4d146941eb	Response: {'ResponseMetadata': {'RetryAttempts': 0, 'HTTPStatusCode': 200, 'RequestId': 'UVMQJB6920M34S34KM9V81PD1JVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPHeaders': {'x-amzn-requestid': 'UVMQJB6920M34S34KM9V81PD1JVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '2', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '2745614147', 'date': 'Fri, 23 Mar 2018 00:21:02 GMT', 'content-type': 'application/x-amz-json-1.0'}}}
+{'ResponseMetadata': {'RetryAttempts': 0, 'HTTPStatusCode': 200, 'RequestId': 'UVMQJB6920M34S34KM9V81PD1JVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPHeaders': {'x-amzn-requestid': 'UVMQJB6920M34S34KM9V81PD1JVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '2', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '2745614147', 'date': 'Fri, 23 Mar 2018 00:21:02 GMT', 'content-type': 'application/x-amz-json-1.0'}}}
+END RequestId: 119b0500-2e30-11e8-92c7-9f4d146941eb
+REPORT RequestId: 119b0500-2e30-11e8-92c7-9f4d146941eb	Duration: 178.62 ms	Billed Duration: 200 ms 	Memory Size: 128 MB	Max Memory Used: 33 MB
+
+
+
+'', 'url_path': '/', 'method': u'POST'}
+[DEBUG]	2018-03-23T21:28:03.92Z	113930ee-2ee1-11e8-9fd9-f768de093641	Event request-created.dynamodb.GetItem: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7fd0f0f03c90>>
+[DEBUG]	2018-03-23T21:28:03.92Z	113930ee-2ee1-11e8-9fd9-f768de093641	Event choose-signer.dynamodb.GetItem: calling handler <function set_operation_specific_signer at 0x7fd0f143bde8>
+[DEBUG]	2018-03-23T21:28:03.92Z	113930ee-2ee1-11e8-9fd9-f768de093641	Calculating signature using v4 auth.
+[DEBUG]	2018-03-23T21:28:03.93Z	113930ee-2ee1-11e8-9fd9-f768de093641	CanonicalRequest:
+POST
+/
+
+content-type:application/x-amz-json-1.0
+host:dynamodb.us-east-1.amazonaws.com
+x-amz-date:20180323T212803Z
+x-amz-security-token:FQoDYXdzEDcaDHi6rKnltH2QkFPwMCLqAbY/rVnjvKAkfMdSfMBjUODNqB3vAnapEq5qsOVKU4+RZoKkVID3hdpldo+wIGRaRwEEnSaI7nPbm+xnFOA6UTK8VeZP/4RhReXacahA+ipvLXEDpSNThv5Lkh3euqWk5Owqvbznjt9eKx4sUYg/QqHYcVGpA0fim0hZBrOYbuAUCnywYZGetPfc5ZDlktzeYrbHWyDiF+DgVJZGyiS06rJ6zkcOch1sPckXzxoPX80xEWm+4wCMWiq87rL7yKF94vcJW0t6BGDKoJYRwy5ubUhNT5N0gOZ/uOsju8YKkDmzzqYnY2YlEBlnCiji4tXVBQ==
+x-amz-target:DynamoDB_20120810.GetItem
+
+content-type;host;x-amz-date;x-amz-security-token;x-amz-target
+e1f625dc8fbcbcc9e7bbed79e775632a640d365ee1ce71a43d87468c27e8798c
+[DEBUG]	2018-03-23T21:28:03.93Z	113930ee-2ee1-11e8-9fd9-f768de093641	StringToSign:
+AWS4-HMAC-SHA256
+20180323T212803Z
+20180323/us-east-1/dynamodb/aws4_request
+76351d597a315015fdea6bc1fe2be37395d8b77caf278cb469d8a4f115ed2274
+[DEBUG]	2018-03-23T21:28:03.93Z	113930ee-2ee1-11e8-9fd9-f768de093641	Signature:
+8afa31d118806966eec31054155a0d020ad39f5abe15b550174e8cee9c3269af
+[DEBUG]	2018-03-23T21:28:03.95Z	113930ee-2ee1-11e8-9fd9-f768de093641	Sending http request: <PreparedRequest [POST]>
+[INFO]	2018-03-23T21:28:03.95Z	113930ee-2ee1-11e8-9fd9-f768de093641	Starting new HTTPS connection (1): dynamodb.us-east-1.amazonaws.com
+[DEBUG]	2018-03-23T21:28:03.295Z	113930ee-2ee1-11e8-9fd9-f768de093641	"POST / HTTP/1.1" 200 2
+[DEBUG]	2018-03-23T21:28:03.295Z	113930ee-2ee1-11e8-9fd9-f768de093641	Response headers: {'x-amzn-requestid': 'KMLNENCFN275PIG6J1PH23S2DFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '2', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '2745614147', 'date': 'Fri, 23 Mar 2018 21:28:03 GMT', 'content-type': 'application/x-amz-json-1.0'}
+[DEBUG]	2018-03-23T21:28:03.295Z	113930ee-2ee1-11e8-9fd9-f768de093641	Response body:
+{}
+[DEBUG]	2018-03-23T21:28:03.296Z	113930ee-2ee1-11e8-9fd9-f768de093641	Event needs-retry.dynamodb.GetItem: calling handler <botocore.retryhandler.RetryHandler object at 0x7fd0f10f7f50>
+[DEBUG]	2018-03-23T21:28:03.296Z	113930ee-2ee1-11e8-9fd9-f768de093641	No retry needed.
+[DEBUG]	2018-03-23T21:28:03.312Z	113930ee-2ee1-11e8-9fd9-f768de093641	Event after-call.dynamodb.GetItem: calling handler <bound method TransformationInjector.inject_attribute_value_output of <boto3.dynamodb.transform.TransformationInjector object at 0x7fd0f10b1b90>>
+[DEBUG]	2018-03-23T21:28:03.312Z	113930ee-2ee1-11e8-9fd9-f768de093641	Response: {'ResponseMetadata': {'RetryAttempts': 0, 'HTTPStatusCode': 200, 'RequestId': 'KMLNENCFN275PIG6J1PH23S2DFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPHeaders': {'x-amzn-requestid': 'KMLNENCFN275PIG6J1PH23S2DFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '2', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '2745614147', 'date': 'Fri, 23 Mar 2018 21:28:03 GMT', 'content-type': 'application/x-amz-json-1.0'}}}
+{'ResponseMetadata': {'RetryAttempts': 0, 'HTTPStatusCode': 200, 'RequestId': 'KMLNENCFN275PIG6J1PH23S2DFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPHeaders': {'x-amzn-requestid': 'KMLNENCFN275PIG6J1PH23S2DFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '2', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '2745614147', 'date': 'Fri, 23 Mar 2018 21:28:03 GMT', 'content-type': 'application/x-amz-json-1.0'}}}
+END RequestId: 113930ee-2ee1-11e8-9fd9-f768de093641
+REPORT RequestId: 113930ee-2ee1-11e8-9fd9-f768de093641	Duration: 235.52 ms	Billed Duration: 300 ms 	Memory Size: 128 MB	Max Memory Used: 33 MB
