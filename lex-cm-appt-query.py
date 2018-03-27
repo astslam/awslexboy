@@ -4,6 +4,34 @@ import json
 import decimal
 from boto3.dynamodb.conditions import Key, Attr
 
+import json
+import dateutil.parser
+import datetime
+import time
+import os
+import math
+import random
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+dynamoTable = dynamodb.Table('ApptBotTime')
+print("print Table")
+
+
+def queryDB(userId):
+    response = dynamoTable.get_item(
+        Key={
+            'ApptID': 'AWS2018-03-2816:00'
+        }
+    )
+    print(response)
+
+
+""" --- Helper Functions --- """
+
 
 # Helper class to convert a DynamoDB item to JSON.
 class DecimalEncoder(json.JSONEncoder):
@@ -16,40 +44,24 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
-# dynamodb = boto3.resource('dynamodb', region_name='ca-central-1')
-# table = dynamodb.Table('Table')
-# print("print Table")
+def try_ex(func):
+    """
+    Call passed in function in try block. If KeyError is encountered return None.
+    This function is intended to be used to safely access dictionary.
+
+    Note that this function would have negative impact on performance.
+    """
+
+    try:
+        return func()
+    except KeyError:
+        return None
 
 
-
-#def updateDB(appointment_time, date, appointment_type, userId):
-def queryDB(userId):
-    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-    dynamoTable = dynamodb.Table('ApptBot')
+""" --- Functions that control the bot's behavior --- """
 
 
-# response = table.query(
-#     KeyConditionExpression=Key('UID').eq(1)
-# )
-
-# for i in response['Items']:
-# #     print(i['Date'], ":", i['title'])
-# # for i in response['Items']:
-#     print(json.dumps(i, cls=DecimalEncoder))
-
-userId = intent_request['userId']
-
-response = table.get_item(
-    Key={
-        'UID': 'userId'
-    }
-)
-
-item = response['Item']
-print(item)
-
-
-def make_appointment(intent_request):
+def check_appointment(intent_request):
     """
     Performs dialog management and fulfillment for booking a dentists appointment.
 
@@ -59,89 +71,21 @@ def make_appointment(intent_request):
     on the bot model and the inferred slot values fully specify the intent.
     """
     appointment_type = intent_request['currentIntent']['slots']['AppointmentType']
-    date = intent_request['currentIntent']['slots']['Date']
-    appointment_time = intent_request['currentIntent']['slots']['Time']
+    # date = intent_request['currentIntent']['slots']['Date']
+    # appointment_time = intent_request['currentIntent']['slots']['Time']
     source = intent_request['invocationSource']
-    # output_session_attributes = intent_request['sessionAttributes'] if intent_request[
-    #                                                                        'sessionAttributes'] is not None else {}
-    # booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
+    output_session_attributes = intent_request['sessionAttributes'] if intent_request[
+                                                                           'sessionAttributes'] is not None else {}
+    booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
     userId = intent_request['userId']
 
+    return dynamoTable.get_item(
+        Key={
+            'ApptID': 'AWS2018-03-2816:00'
+        }
+    )
+
     queryDB(userId)
-    #
-    # if source == 'DialogCodeHook':
-    #     # Perform basic validation on the supplied input slots.
-    #     slots = intent_request['currentIntent']['slots']
-    #     validation_result = validate_book_appointment(appointment_type, date, appointment_time)
-    #     if not validation_result['isValid']:
-    #         slots[validation_result['violatedSlot']] = None
-    #         return elicit_slot(
-    #             output_session_attributes,
-    #             intent_request['currentIntent']['name'],
-    #             slots,
-    #             validation_result['violatedSlot'],
-    #             validation_result['message'],
-    #             build_response_card(
-    #                 'Specify {}'.format(validation_result['violatedSlot']),
-    #                 validation_result['message']['content'],
-    #                 build_options(validation_result['violatedSlot'], appointment_type, date, booking_map)
-    #             )
-    #         )
-    #
-    #     if not appointment_type:
-    #         return elicit_slot(
-    #             output_session_attributes,
-    #             intent_request['currentIntent']['name'],
-    #             intent_request['currentIntent']['slots'],
-    #             'AppointmentType',
-    #             {'contentType': 'PlainText', 'content': 'What type of appointment would you like to schedule?'},
-    #             build_response_card(
-    #                 'Specify Appointment Type', 'What type of appointment would you like to schedule?',
-    #                 build_options('AppointmentType', appointment_type, date, None)
-    #             )
-    #         )
-    #
-    #     if appointment_type and not date:
-    #         return elicit_slot(
-    #             output_session_attributes,
-    #             intent_request['currentIntent']['name'],
-    #             intent_request['currentIntent']['slots'],
-    #             'Date',
-    #             {'contentType': 'PlainText',
-    #              'content': 'When would you like to schedule your {}?'.format(appointment_type)},
-    #             build_response_card(
-    #                 'Specify Date',
-    #                 'When would you like to schedule your {}?'.format(appointment_type),
-    #                 build_options('Date', appointment_type, date, None)
-    #             )
-    #         )
-    #
-    #     updateDB(
-    #         appointment_time,
-    #         date,
-    #         appointment_type,
-    #         userId
-    # #     )  # SL
-    #
-    # else:
-    #     # This is not treated as an error as this code sample supports functionality either as fulfillment or dialog code hook.
-    #     logger.debug('Availabilities for {} were null at fulfillment time.  '
-    #                  'This should have been initialized if this function was configured as the dialog code hook'.format(
-    #         date))
-    #
-    # return close(
-    #     output_session_attributes,
-    #     'Fulfilled',
-    #     {
-    #         'contentType': 'PlainText',
-    #         'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(
-    #             build_time_output_string(appointment_time), date)
-    #     }
-    # )
-    #
-
-#####
-
 
 """ --- Intents --- """
 
