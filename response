@@ -73,3 +73,73 @@ AWS4-HMAC-SHA256
 {'ResponseMetadata': {'RetryAttempts': 0, 'HTTPStatusCode': 200, 'RequestId': 'KMLNENCFN275PIG6J1PH23S2DFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPHeaders': {'x-amzn-requestid': 'KMLNENCFN275PIG6J1PH23S2DFVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '2', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '2745614147', 'date': 'Fri, 23 Mar 2018 21:28:03 GMT', 'content-type': 'application/x-amz-json-1.0'}}}
 END RequestId: 113930ee-2ee1-11e8-9fd9-f768de093641
 REPORT RequestId: 113930ee-2ee1-11e8-9fd9-f768de093641	Duration: 235.52 ms	Billed Duration: 300 ms 	Memory Size: 128 MB	Max Memory Used: 33 MB
+
+Contact method Email / phone / name
+Contact info email add / phon no / John
+
+=====================================================
+2018-03-27 log
+Response:
+{
+  "Item": {
+    "ApptDate": "2018-03-28",
+    "ApptTime": "16:00",
+    "UID": "1591286177615878",
+    "ApptID": "AWS2018-03-2816:00",
+    "ApptType": "AWS"
+  },
+  "ResponseMetadata": {
+    "RetryAttempts": 0,
+    "HTTPStatusCode": 200,
+    "RequestId": "S94FT023R3VJKM0QR2FSGIMIPVVV4KQNSO5AEMVJF66Q9ASUAAJG",
+    "HTTPHeaders": {
+      "x-amzn-requestid": "S94FT023R3VJKM0QR2FSGIMIPVVV4KQNSO5AEMVJF66Q9ASUAAJG",
+      "content-length": "155",
+      "server": "Server",
+      "connection": "keep-alive",
+      "x-amz-crc32": "1192696381",
+      "date": "Tue, 27 Mar 2018 22:22:48 GMT",
+      "content-type": "application/x-amz-json-1.0"
+    }
+  }
+}
+
+Request ID:
+"615871dd-320d-11e8-8c34-b3a3fb91d04f"
+
+Function Logs:
+ut': False, 'client_config': <botocore.config.Config object at 0x7f8e14e31d50>}, 'query_string': '', 'url_path': '/', 'method': u'POST'}
+[DEBUG]	2018-03-27T22:22:48.868Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Event request-created.dynamodb.GetItem: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7f8e14e31c50>>
+[DEBUG]	2018-03-27T22:22:48.874Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Event choose-signer.dynamodb.GetItem: calling handler <function set_operation_specific_signer at 0x7f8e15368de8>
+[DEBUG]	2018-03-27T22:22:48.875Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Calculating signature using v4 auth.
+[DEBUG]	2018-03-27T22:22:48.875Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	CanonicalRequest:
+POST
+/
+
+content-type:application/x-amz-json-1.0
+host:dynamodb.us-east-1.amazonaws.com
+x-amz-date:20180327T222248Z
+x-amz-security-token:FQoDYXdzEJj//////////wEaDNS/cUmdiIQiw6GciiLqAZQ3TOa1vyReipPDU6rUdq/C2ZXj0PrAfGjVkd9vaXJYc5nBoUvSwkCIJhCm8pUISR6Q0NoZ0xr6GcVxuBlLMKA5LntQLV85jkxgsTb6fOY6cRSIGUMoFIiIvBQI7vahNPSG3RL5yqX2EKp3SDIwtEvj2vGa24MiYqaeXGIDjEBBnB6I99RZ4LP0zkhHAHYxtB6NzgKtEp2HtjCy40QaZRBDaI5btnaU5rNT8gEHdwf1YOKL8EuXlTe3QyzREZCFTz0utF/K5hCyP8HcQlGJ5pO3kBVywNrK2rg8fLOjdVS9INlFZUAkb1YQ9CiQiOvVBQ==
+x-amz-target:DynamoDB_20120810.GetItem
+
+content-type;host;x-amz-date;x-amz-security-token;x-amz-target
+dc45ac58fdd0dd75c50097caebb6f369bf93cc4af576bd9664298787050be220
+[DEBUG]	2018-03-27T22:22:48.875Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	StringToSign:
+AWS4-HMAC-SHA256
+20180327T222248Z
+20180327/us-east-1/dynamodb/aws4_request
+afab6d5450ceb8c361be1aecfe073c643a930d6b6a6afd58b9c32ed2c70f8ba3
+[DEBUG]	2018-03-27T22:22:48.875Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Signature:
+b9fcc2b58fdbdb8e93aaba1df61c4e0c94e41e4f8f09d9118dbba6dd523346ae
+[DEBUG]	2018-03-27T22:22:48.877Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Sending http request: <PreparedRequest [POST]>
+[INFO]	2018-03-27T22:22:48.877Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Starting new HTTPS connection (1): dynamodb.us-east-1.amazonaws.com
+[DEBUG]	2018-03-27T22:22:49.75Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	"POST / HTTP/1.1" 200 155
+[DEBUG]	2018-03-27T22:22:49.76Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Response headers: {'x-amzn-requestid': 'S94FT023R3VJKM0QR2FSGIMIPVVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '155', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '1192696381', 'date': 'Tue, 27 Mar 2018 22:22:48 GMT', 'content-type': 'application/x-amz-json-1.0'}
+[DEBUG]	2018-03-27T22:22:49.76Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Response body:
+{"Item":{"ApptType":{"S":"AWS"},"ApptTime":{"S":"16:00"},"ApptDate":{"S":"2018-03-28"},"UID":{"S":"1591286177615878"},"ApptID":{"S":"AWS2018-03-2816:00"}}}
+[DEBUG]	2018-03-27T22:22:49.77Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Event needs-retry.dynamodb.GetItem: calling handler <botocore.retryhandler.RetryHandler object at 0x7f8e15025f10>
+[DEBUG]	2018-03-27T22:22:49.77Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	No retry needed.
+[DEBUG]	2018-03-27T22:22:49.77Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Event after-call.dynamodb.GetItem: calling handler <bound method TransformationInjector.inject_attribute_value_output of <boto3.dynamodb.transform.TransformationInjector object at 0x7f8e14fe0b50>>
+[DEBUG]	2018-03-27T22:22:49.77Z	615871dd-320d-11e8-8c34-b3a3fb91d04f	Response: {u'Item': {u'ApptDate': u'2018-03-28', u'ApptTime': u'16:00', u'UID': u'1591286177615878', u'ApptID': u'AWS2018-03-2816:00', u'ApptType': u'AWS'}, 'ResponseMetadata': {'RetryAttempts': 0, 'HTTPStatusCode': 200, 'RequestId': 'S94FT023R3VJKM0QR2FSGIMIPVVV4KQNSO5AEMVJF66Q9ASUAAJG', 'HTTPHeaders': {'x-amzn-requestid': 'S94FT023R3VJKM0QR2FSGIMIPVVV4KQNSO5AEMVJF66Q9ASUAAJG', 'content-length': '155', 'server': 'Server', 'connection': 'keep-alive', 'x-amz-crc32': '1192696381', 'date': 'Tue, 27 Mar 2018 22:22:48 GMT', 'content-type': 'application/x-amz-json-1.0'}}}
+END RequestId: 615871dd-320d-11e8-8c34-b3a3fb91d04f
+REPORT RequestId: 615871dd-320d-11e8-8c34-b3a3fb91d04f	Duration: 211.06 ms	Billed Duration: 300 ms 	Memory Size: 128 MB	Max Memory Used: 33 MB
