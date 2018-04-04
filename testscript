@@ -11,7 +11,7 @@
     "version": "$LATEST",
     "name": "MakeAppointmentQuery"
   },
-  "userId": "1591286177615878",
+  "userId": "Jason",
   "invocationSource": "DialogCodeHook",
   "outputDialogMode": "Text",
   "messageVersion": "1.0",
