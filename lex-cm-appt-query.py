@@ -14,7 +14,12 @@ import random
 import logging
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG) #The log level identifies the type of log, such as [INFO], [ERROR], and [DEBUG].
+
+def my_logging_handler(event, context):
+    logger.info('got event{}'.format(event))
+    logger.error('something went wrong')
+    return 'Hello from Lambda!'  
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamoTable = dynamodb.Table('ApptBotTime')
@@ -61,6 +66,20 @@ class DecimalEncoder(json.JSONEncoder):
         return super(DecimalEncoder, self).default(o)
 
 
+
+def close(session_attributes, fulfillment_state, message):
+    response = {
+        'sessionAttributes': session_attributes,
+        'dialogAction': {
+            'type': 'Close',
+            'fulfillmentState': fulfillment_state,
+            'message': message
+        }
+    }
+
+    return response
+
+
 def try_ex(func):
     """
     Call passed in function in try block. If KeyError is encountered return None.
@@ -90,7 +109,7 @@ def check_appointment(intent_request):
     appointment_type = intent_request['currentIntent']['slots']['AppointmentType']
     # date = intent_request['currentIntent']['slots']['Date']
     # appointment_time = intent_request['currentIntent']['slots']['Time']
-    source = intent_request['invocationSource']
+    # source = intent_request['invocationSource']
     output_session_attributes = intent_request['sessionAttributes'] if intent_request[
                                                                            'sessionAttributes'] is not None else {}
     # booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
@@ -117,6 +136,16 @@ def check_appointment(intent_request):
     print(json.dumps(response, indent=4, cls=DecimalEncoder))
     print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
                                                        Js_response['Item']['ApptTime']))
+
+    return close(
+        output_session_attributes,
+        'Fulfilled',
+        {
+            'contentType': 'PlainText',
+            # 'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(build_time_output_string(appointment_time), date)
+            'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
+        }
+    )
 
     # if source == 'DialogCodeHook':
     #     # Perform basic validation on the supplied input slots.
@@ -226,6 +255,7 @@ def lambda_handler(event, context):
     # By default, treat the user request as coming from the America/New_York time zone.
     os.environ['TZ'] = 'America/New_York'
     time.tzset()
+    logger.debug('[DEBUG] QUERY |||||')
     logger.debug('event.bot.name={}'.format(event['bot']['name']))
     logger.debug(event)
     return dispatch(event)
