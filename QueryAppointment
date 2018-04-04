@@ -1,0 +1,19 @@
+{
+  "currentIntent": {
+    "name": "MakeAppointmentQuery",
+    "slots": {
+      "AppointmentType": "AWS"
+    },
+    "confirmationStatus": "None"
+  },
+  "bot": {
+    "alias": "$LATEST",
+    "version": "$LATEST",
+    "name": "MakeAppointmentQuery"
+  },
+  "userId": "Jason",
+  "invocationSource": "DialogCodeHook",
+  "outputDialogMode": "Text",
+  "messageVersion": "1.0",
+  "sessionAttributes": {}
+}
