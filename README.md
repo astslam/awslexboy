@@ -12,20 +12,22 @@ Created function to store appointment information in dyanamodB
 Use Lex template to create appointment availabilities and book the appointment.
 UpdateDB() is executed in make_appointment()
 
+AWS Lex Lambda function in Python 2.7 
+
 ######
-===================
+
 
 **Main Functions:**
 
-AWS Lex Lambda function in Python 2.7 
+
 
 >lex-cm-appointment-py.py	
 
 >lex-cm-appt-query.py
 
-===================
 
-Test Scripts in Test folder 
+**Test Scripts in Test folder **
+
 >/awslexboy/Test/
 
 _last update 2018-04-05_
