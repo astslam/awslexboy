@@ -112,40 +112,46 @@ def check_appointment(intent_request):
     # source = intent_request['invocationSource']
     output_session_attributes = intent_request['sessionAttributes'] if intent_request[
                                                                            'sessionAttributes'] is not None else {}
-    # booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
     userId = 'Jason'  # intent_request['userId']
 
-    response = dynamoTable.get_item(
-        Key={
-            # 'ApptID': 'AWS2018-03-2816:00' ### Apptbottime key ApptID
-            # 'UID' : userId                  ### Apptbot key UID
-            'ApptID': userId
-        }
-    )
+    try:
+        response = dynamoTable.get_item(
+            Key={
+                # 'UID' : userId                ### Apptbot key UID
+                'ApptID': userId                ### Apptbottime key ApptID
+            }
+        )
 
-    # dumps the json object into an element
-    json_str = json.dumps(response)
+    except ClientError as e:
+        if e.response['Error']['Code'] == "ConditionalCheckFailedException":
+            print(e.response['Error']['Message'])
+        else:
+            raise
+    else:
 
-    # load the json to a string
-    Js_response = json.loads(json_str)
-
-    Appointment_date = Js_response['Item']['ApptDate']
-    Appointment_time = Js_response['Item']['ApptTime']
-    appointment_type = Js_response['Item']['ApptType']
-    # print('Your {} appointment is on {} at {}'.format(Appointment_type,Appointment_date,Appointment_time))
-    print(json.dumps(response, indent=4, cls=DecimalEncoder))
-    print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
-                                                       Js_response['Item']['ApptTime']))
-
-    return close(
-        output_session_attributes,
-        'Fulfilled',
-        {
-            'contentType': 'PlainText',
-            # 'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(build_time_output_string(appointment_time), date)
-            'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
-        }
-    )
+        # dumps the json object into an element
+        json_str = json.dumps(response)
+    
+        # load the json to a string
+        Js_response = json.loads(json_str)
+    
+        Appointment_date = Js_response['Item']['ApptDate']
+        Appointment_time = Js_response['Item']['ApptTime']
+        appointment_type = Js_response['Item']['ApptType']
+        # print('Your {} appointment is on {} at {}'.format(Appointment_type,Appointment_date,Appointment_time))
+        print(json.dumps(response, indent=4, cls=DecimalEncoder))
+        print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
+                                                           Js_response['Item']['ApptTime']))
+    
+        return close(
+            output_session_attributes,
+            'Fulfilled',
+            {
+                'contentType': 'PlainText',
+                # 'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(build_time_output_string(appointment_time), date)
+                'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
+            }
+        )
 
     # if source == 'DialogCodeHook':
     #     # Perform basic validation on the supplied input slots.
