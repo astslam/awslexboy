@@ -20,35 +20,59 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-# SL
+
+#SL
 """ --- DynamoDB update --- """
 import boto3
+ts = str(time.time())
 
-
-def updateDB(appointment_time, date, appointment_type, userId):
+def updateDB(appointment_time, date, appointment_type, userId): 
     dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-    dynamoTable = dynamodb.Table('ApptBot')
+    dynamoTable = dynamodb.Table('ApptBotTime') #ApptBot')
 
-    # userId = intent_request['userId']
-
+    
+    #userId = intent_request['userId']
+    
     response = dynamoTable.put_item(
-        Item={
+      Item={
             # 'Date': datetime(2018, 1, 1),
             # 'Create_Time': "1700"
+            'ApptID' : appointment_type +"_"+ userId, #partition key
             'UID': userId,
-            'Date': date,
-            'Create_Time': appointment_time,
-            'type': appointment_type
+            'ApptDate': date,
+            'ApptTime': appointment_time,
+            'ApptType': appointment_type,
+            'Create_Time' : ts
             # output_session_attributes
         }
+        # Item = {
+        #     # 'Date': datetime(2018, 1, 1),
+        #     # 'Create_Time': "1700"
+        #     'UID': userId, 
+        #     'Date': date,
+        #     'Create_Time': appointment_time, 
+        #     'type': appointment_type,
+        #     # 'name' : 
+        #     # output_session_attributes
+        # }
     )
-
-    logger.debug('DBtestlog === Time {}, Date {}, Type {}'.format(appointment_time, date, appointment_type))
+    
+    logger.debug('DBtestlog === Time {}, Date {}, Type {}'  .format(appointment_time, date, appointment_type))
     # logger.debug('DBtestlog userId={}'.format(intent_request['userId']))
-    # print(json.dumps(response, indent=4, cls=DecimalEncoder))
+    #print(json.dumps(response, indent=4, cls=DecimalEncoder))
+    
+#     inputtext = []
+# def user_input(message, inputtext):
+#     return {
+#         # # 'sessionAttributes': session_attributes,
+#         # 'dialogAction': {
+#         #     'type': 'UserInput',
+#         #     # 'intentName': intent_name,
+#             'message': message,
+#             'inputtext':inputtext, 
+#     }
 
-
-# SL --
+#SL -- 
 
 """ --- Helpers to build responses which match the structure of the necessary dialog actions --- """
 
@@ -171,13 +195,17 @@ def get_availabilities(date):
     In order to enable quick demonstration of all possible conversation paths supported in this example, the function
     returns a mixture of fixed and randomized results.
 
-    On Mondays, availability is randomized; otherwise there is no availability on Tuesday / Thursday and availability at
+    On Mondays, availability is randomized; otherwise there is no availability on Tuesday / Thursday 
+    # SL removed 
+    and availability at
     10:00 - 10:30 and 4:00 - 5:00 on Wednesday / Friday.
     """
     day_of_week = dateutil.parser.parse(date).weekday()
     availabilities = []
     available_probability = 0.3
-    if day_of_week == 0:
+    #SL
+    # if day_of_week == 0:
+    if day_of_week == 0 or day_of_week == 1 or day_of_week == 2 or day_of_week == 3 or day_of_week == 4 :    
         start_hour = 10
         while start_hour <= 16:
             if random.random() < available_probability:
@@ -192,10 +220,12 @@ def get_availabilities(date):
                     availabilities.append('{}:30'.format(start_hour))
             start_hour += 1
 
-    if day_of_week == 2 or day_of_week == 4:
-        availabilities.append('10:00')
-        availabilities.append('16:00')
-        availabilities.append('16:30')
+    # SL 
+    # if day_of_week == 2 or day_of_week == 4:
+    #     availabilities.append('10:00')
+    #     availabilities.append('10:00')
+    #     availabilities.append('16:00')
+    #     availabilities.append('16:30')
 
     return availabilities
 
@@ -257,48 +287,40 @@ def build_validation_result(is_valid, violated_slot, message_content):
 
 def validate_book_appointment(appointment_type, date, appointment_time):
     if appointment_type and not get_duration(appointment_type):
-        #       return build_validation_result(False, 'AppointmentType', 'I did not recognize that, can I book you a root canal, cleaning, or whitening?')
-        return build_validation_result(False, 'AppointmentType',
-                                       'You can book an appointment for AWS consultation, IoT, or General Inquiry.')
+#       return build_validation_result(False, 'AppointmentType', 'I did not recognize that, can I book you a root canal, cleaning, or whitening?')
+        return build_validation_result(False, 'AppointmentType', 'You can book an appointment for AWS consultation, IoT, or General Inquiry.')
 
     if appointment_time:
         if len(appointment_time) != 5:
-            return build_validation_result(False, 'Time',
-                                           'I did not recognize that, what time would you like to book your appointment?')
+            return build_validation_result(False, 'Time', 'I did not recognize that, what time would you like to book your appointment?')
 
         hour, minute = appointment_time.split(':')
         hour = parse_int(hour)
         minute = parse_int(minute)
         if math.isnan(hour) or math.isnan(minute):
-            return build_validation_result(False, 'Time',
-                                           'I did not recognize that, what time would you like to book your appointment?')
+            return build_validation_result(False, 'Time', 'I did not recognize that, what time would you like to book your appointment?')
 
         if hour < 10 or hour > 16:
             # Outside of business hours
-            return build_validation_result(False, 'Time',
-                                           'Our business hours are ten a.m. to five p.m.  What time works best for you?')
+            return build_validation_result(False, 'Time', 'Our business hours are ten a.m. to five p.m.  What time works best for you?')
 
         if minute not in [30, 0]:
             # Must be booked on the hour or half hour
-            return build_validation_result(False, 'Time',
-                                           'We schedule appointments every half hour, what time works best for you?')
+            return build_validation_result(False, 'Time', 'We schedule appointments every half hour, what time works best for you?')
 
     if date:
         if not isvalid_date(date):
             return build_validation_result(False, 'Date', 'I did not understand that, what date works best for you?')
         elif datetime.datetime.strptime(date, '%Y-%m-%d').date() <= datetime.date.today():
-            return build_validation_result(False, 'Date',
-                                           'Appointments must be scheduled a day in advance.  Can you try a different date?')
+            return build_validation_result(False, 'Date', 'Appointments must be scheduled a day in advance.  Can you try a different date?')
         elif dateutil.parser.parse(date).weekday() == 5 or dateutil.parser.parse(date).weekday() == 6:
-            return build_validation_result(False, 'Date',
-                                           'Our office is not open on the weekends, can you provide a work day?')
+            return build_validation_result(False, 'Date', 'Our office is not open on the weekends, can you provide a work day?')
 
     return build_validation_result(True, None, None)
 
 
 def build_time_output_string(appointment_time):
-    hour, minute = appointment_time.split(
-        ':')  # no conversion to int in order to have original string form. for eg) 10:00 instead of 10:0
+    hour, minute = appointment_time.split(':')  # no conversion to int in order to have original string form. for eg) 10:00 instead of 10:0
     if int(hour) > 12:
         return '{}:{} p.m.'.format((int(hour) - 12), minute)
     elif int(hour) == 12:
@@ -321,8 +343,7 @@ def build_available_time_string(availabilities):
     if len(availabilities) == 2:
         return '{} and {}'.format(prefix, build_time_output_string(availabilities[1]))
 
-    return '{}, {} and {}'.format(prefix, build_time_output_string(availabilities[1]),
-                                  build_time_output_string(availabilities[2]))
+    return '{}, {} and {}'.format(prefix, build_time_output_string(availabilities[1]), build_time_output_string(availabilities[2]))
 
 
 def build_options(slot, appointment_type, date, booking_map):
@@ -347,8 +368,7 @@ def build_options(slot, appointment_type, date, booking_map):
         while len(options) < 5:
             potential_date = potential_date + datetime.timedelta(days=1)
             if potential_date.weekday() < 5:
-                options.append({'text': '{}-{} ({})'.format((potential_date.month), potential_date.day,
-                                                            day_strings[potential_date.weekday()]),
+                options.append({'text': '{}-{} ({})'.format((potential_date.month), potential_date.day, day_strings[potential_date.weekday()]),
                                 'value': potential_date.strftime('%A, %B %d, %Y')})
         return options
     elif slot == 'Time':
@@ -366,8 +386,7 @@ def build_options(slot, appointment_type, date, booking_map):
 
         options = []
         for i in range(min(len(availabilities), 5)):
-            options.append({'text': build_time_output_string(availabilities[i]),
-                            'value': build_time_output_string(availabilities[i])})
+            options.append({'text': build_time_output_string(availabilities[i]), 'value': build_time_output_string(availabilities[i])})
 
         return options
 
@@ -388,12 +407,43 @@ def make_appointment(intent_request):
     date = intent_request['currentIntent']['slots']['Date']
     appointment_time = intent_request['currentIntent']['slots']['Time']
     source = intent_request['invocationSource']
-    output_session_attributes = intent_request['sessionAttributes'] if intent_request[
-                                                                           'sessionAttributes'] is not None else {}
+    output_session_attributes = intent_request['sessionAttributes'] if intent_request['sessionAttributes'] is not None else {}
     booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
 
-    userId = intent_request['userId']
+    # userId = intent_request['userId']
+    # message_content = ['xxx']
+    # return user_input(
+    #                     # # output_session_attributes,
+    #                     # # intent_request['currentIntent']['name'],
+    #                     # {
+    #                     #     'contentType': 'PlainText',
+    #                         # 'content': 'Do you want to add any notes to this appointment? You can add a nickname or a note to retrieve your appointment'
+    #                     # },
+                        
+    #                     # 'content': '{}{} is our only availability, does that work for you?'.format(message_content, build_time_output_string(appointment_type_availabilities[0]))
+    #                     'Do you want to add any notes to this appointment? You can add a nickname or a note to retrieve your appointment', 
+    #                     message_content
+    #                     # 'Please input Name or notes.{}' .format(message_content)
+    #                 )
+    # UserInput = inputTranscript
+    # mess = intent_request['inputTranscript']
+    # return ('Enter name. ', mess)
+    # def get_drink(intent_request):
 
+    # # slot = intent_request['currentIntent']['slots']
+    # # value2 = intent_request['currentIntent']['slots']['drink']
+    # mess = intent_request['inputTranscript']
+    # session_attributes = {}
+
+    # return close(
+
+    #     session_attributes,
+    #     'Fulfilled',{
+    #         'contentType':'PlainText',
+    #         'content':'Your order of 000'+mess
+    #     })
+    
+    
     if source == 'DialogCodeHook':
         # Perform basic validation on the supplied input slots.
         slots = intent_request['currentIntent']['slots']
@@ -432,11 +482,10 @@ def make_appointment(intent_request):
                 intent_request['currentIntent']['name'],
                 intent_request['currentIntent']['slots'],
                 'Date',
-                {'contentType': 'PlainText',
-                 'content': 'When would you like to schedule your {}?'.format(appointment_type)},
+                {'contentType': 'PlainText', 'content': 'When would you like to schedule your {} appointment ?'.format(appointment_type)},
                 build_response_card(
                     'Specify Date',
-                    'When would you like to schedule your {}?'.format(appointment_type),
+                    'When would you like to schedule your {} appointment?'.format(appointment_type), #SL
                     build_options('Date', appointment_type, date, None)
                 )
             )
@@ -449,8 +498,7 @@ def make_appointment(intent_request):
                 booking_map[date] = booking_availabilities
                 output_session_attributes['bookingMap'] = json.dumps(booking_map)
 
-            appointment_type_availabilities = get_availabilities_for_duration(get_duration(appointment_type),
-                                                                              booking_availabilities)
+            appointment_type_availabilities = get_availabilities_for_duration(get_duration(appointment_type), booking_availabilities)
             if len(appointment_type_availabilities) == 0:
                 # No availability on this day at all; ask for a new date and time.
                 slots['Date'] = None
@@ -460,8 +508,7 @@ def make_appointment(intent_request):
                     intent_request['currentIntent']['name'],
                     slots,
                     'Date',
-                    {'contentType': 'PlainText',
-                     'content': 'We do not have any availability on that date, is there another day which works for you?'},
+                    {'contentType': 'PlainText', 'content': 'We do not have any availability on that date, is there another day which works for you?'},
                     build_response_card(
                         'Specify Date',
                         'What day works best for you?',
@@ -481,8 +528,8 @@ def make_appointment(intent_request):
             if len(appointment_type_availabilities) == 1:
                 # If there is only one availability on the given date, try to confirm it.
                 slots['Time'] = appointment_type_availabilities[0]
-
-                # updateDB(appointment_time, date, appointment_type, intent_request['userId']) #SL test
+                
+                #updateDB(appointment_time, date, appointment_type, intent_request['userId']) #SL test                 
                 return confirm_intent(
                     output_session_attributes,
                     intent_request['currentIntent']['name'],
@@ -490,7 +537,7 @@ def make_appointment(intent_request):
                     {
                         'contentType': 'PlainText',
                         'content': '{}{} is our only availability, does that work for you?'.format
-                        (message_content, build_time_output_string(appointment_type_availabilities[0]))
+                                   (message_content, build_time_output_string(appointment_type_availabilities[0]))
                     },
                     build_response_card(
                         'Confirm Appointment',
@@ -527,30 +574,29 @@ def make_appointment(intent_request):
 
         booking_map[date] = booking_availabilities
         output_session_attributes['bookingMap'] = json.dumps(booking_map)
-
+                    
+        userId = intent_request['userId']
         updateDB(
-            appointment_time,
-            date,
-            appointment_type,
+            appointment_time, 
+            date, 
+            appointment_type, 
             userId
-        )  # SL
-
+        ) #SL
+   
     else:
         # This is not treated as an error as this code sample supports functionality either as fulfillment or dialog code hook.
         logger.debug('Availabilities for {} were null at fulfillment time.  '
-                     'This should have been initialized if this function was configured as the dialog code hook'.format(
-            date))
+                     'This should have been initialized if this function was configured as the dialog code hook'.format(date))
 
     return close(
         output_session_attributes,
         'Fulfilled',
         {
             'contentType': 'PlainText',
-            'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(
-                build_time_output_string(appointment_time), date)
+            'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(build_time_output_string(appointment_time), date)
         }
     )
-
+    
 
 """ --- Intents --- """
 
@@ -560,8 +606,7 @@ def dispatch(intent_request):
     Called when the user specifies an intent for this bot.
     """
 
-    logger.debug(
-        'dispatch userId={}, intentName={}'.format(intent_request['userId'], intent_request['currentIntent']['name']))
+    logger.debug('dispatch userId={}, intentName={}'.format(intent_request['userId'], intent_request['currentIntent']['name']))
 
     intent_name = intent_request['currentIntent']['name']
 
@@ -579,8 +624,9 @@ def lambda_handler(event, context):
     Route the incoming request based on intent.
     The JSON body of the request is provided in the event slot.
     """
-    # By default, treat the user request as coming from the America/New_York time zone.
-    os.environ['TZ'] = 'America/New_York'
+    ## By default, treat the user request as coming from the America/New_York time zone.
+    # SL changed to America/Vancouver time zone 
+    os.environ['TZ'] = 'America/Vancouver'
     time.tzset()
     logger.debug('event.bot.name={}'.format(event['bot']['name']))
     logger.debug(event)
