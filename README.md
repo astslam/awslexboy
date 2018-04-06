@@ -15,15 +15,17 @@ UpdateDB() is executed in make_appointment()
 ######
 ===================
 
-Main Functions: 
+**Main Functions: 
+
 AWS Lex Lambda function in Python 2.7 
 
-lex-cm-appointment-py.py	
+>lex-cm-appointment-py.py	
 
-lex-cm-appt-query.py
+>lex-cm-appt-query.py
 
 ===================
 
-Test Scripts in Test folder /awslexboy/Test/
+Test Scripts in Test folder 
+>/awslexboy/Test/
 
 last update 2018-04-05
