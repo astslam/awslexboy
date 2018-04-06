@@ -14,7 +14,7 @@ import random
 import logging
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG) #The log level identifies the type of log, such as [INFO], [ERROR], and [DEBUG].
+logger.setLevel(logging.DEBUG) 
 
 def my_logging_handler(event, context):
     logger.info('got event{}'.format(event))
@@ -23,33 +23,6 @@ def my_logging_handler(event, context):
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamoTable = dynamodb.Table('ApptBotTime')
-# print("print Table")
-
-# def queryDB(userId):
-#     # dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-#     # dynamoTable = dynamodb.Table('ApptBot')
-
-#     # userId = 'John'
-
-# # response = table.query(
-# #     KeyConditionExpression=Key('UID').eq(1)
-# # )
-
-# # for i in response['Items']:
-# # #     print(i['Date'], ":", i['title'])
-# # # for i in response['Items']:
-# #     print(json.dumps(i, cls=DecimalEncoder))
-
-#     response = dynamoTable.get_item(
-#         Key={
-#             # 'ApptID': 'AWS2018-03-2816:00'
-#             'UID' : userId
-#         }
-#     )
-
-#     # item = response['Item']
-#     # print(item)
-#     print(response)
 
 
 """ --- Helper Functions --- """
@@ -107,9 +80,6 @@ def check_appointment(intent_request):
     on the bot model and the inferred slot values fully specify the intent.
     """
     appointment_type = intent_request['currentIntent']['slots']['AppointmentType']
-    # date = intent_request['currentIntent']['slots']['Date']
-    # appointment_time = intent_request['currentIntent']['slots']['Time']
-    # source = intent_request['invocationSource']
     output_session_attributes = intent_request['sessionAttributes'] if intent_request[
                                                                            'sessionAttributes'] is not None else {}
     userId = 'Jason'  # intent_request['userId']
@@ -138,7 +108,6 @@ def check_appointment(intent_request):
         Appointment_date = Js_response['Item']['ApptDate']
         Appointment_time = Js_response['Item']['ApptTime']
         appointment_type = Js_response['Item']['ApptType']
-        # print('Your {} appointment is on {} at {}'.format(Appointment_type,Appointment_date,Appointment_time))
         print(json.dumps(response, indent=4, cls=DecimalEncoder))
         print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
                                                            Js_response['Item']['ApptTime']))
@@ -152,80 +121,6 @@ def check_appointment(intent_request):
                 'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
             }
         )
-
-    # if source == 'DialogCodeHook':
-    #     # Perform basic validation on the supplied input slots.
-    #     slots = intent_request['currentIntent']['slots']
-    #     validation_result = validate_book_appointment(appointment_type, date, appointment_time)
-    #     if not validation_result['isValid']:
-    #         slots[validation_result['violatedSlot']] = None
-    #         return elicit_slot(
-    #             output_session_attributes,
-    #             intent_request['currentIntent']['name'],
-    #             slots,
-    #             validation_result['violatedSlot'],
-    #             validation_result['message'],
-    #             build_response_card(
-    #                 'Specify {}'.format(validation_result['violatedSlot']),
-    #                 validation_result['message']['content'],
-    #                 build_options(validation_result['violatedSlot'], appointment_type, date, booking_map)
-    #             )
-    #         )
-    #
-    #     if not appointment_type:
-    #         return elicit_slot(
-    #             output_session_attributes,
-    #             intent_request['currentIntent']['name'],
-    #             intent_request['currentIntent']['slots'],
-    #             'AppointmentType',
-    #             {'contentType': 'PlainText', 'content': 'What type of appointment would you like to schedule?'},
-    #             build_response_card(
-    #                 'Specify Appointment Type', 'What type of appointment would you like to schedule?',
-    #                 build_options('AppointmentType', appointment_type, date, None)
-    #             )
-    #         )
-    #
-    #     if appointment_type and not date:
-    #         return elicit_slot(
-    #             output_session_attributes,
-    #             intent_request['currentIntent']['name'],
-    #             intent_request['currentIntent']['slots'],
-    #             'Date',
-    #             {'contentType': 'PlainText',
-    #              'content': 'When would you like to schedule your {}?'.format(appointment_type)},
-    #             build_response_card(
-    #                 'Specify Date',
-    #                 'When would you like to schedule your {}?'.format(appointment_type),
-    #                 build_options('Date', appointment_type, date, None)
-    #             )
-    #         )
-    #
-    #     updateDB(
-    #         appointment_time,
-    #         date,
-    #         appointment_type,
-    #         userId
-    # #     )  # SL
-    #
-    # else:
-    #     # This is not treated as an error as this code sample supports functionality either as fulfillment or dialog code hook.
-    #     logger.debug('Availabilities for {} were null at fulfillment time.  '
-    #                  'This should have been initialized if this function was configured as the dialog code hook'.format(
-    #         date))
-    #
-    # return close(
-    #     output_session_attributes,
-    #     'Fulfilled',
-    #     {
-    #         'contentType': 'PlainText',
-    #         'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(
-    #             build_time_output_string(appointment_time), date)
-    #     }
-    # )
-    #
-
-
-#####
 
 
 """ --- Intents --- """
