@@ -26,7 +26,7 @@ AWS Lex Lambda function in Python 2.7
 >lex-cm-appt-query.py
 
 
-**Test Scripts in Test folder **
+**Test Scripts in Test folder**
 
 >/awslexboy/Test/
 
