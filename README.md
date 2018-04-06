@@ -7,7 +7,7 @@ update appointment detail to DynamoDB
 ==================
 
 Created function to store appointment information in dyanamodB 
-  def updateDB()
+>  def updateDB()
   
 Use Lex template to create appointment availabilities and book the appointment.
 UpdateDB() is executed in make_appointment()
