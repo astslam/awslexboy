@@ -37,7 +37,7 @@ def updateDB(appointment_time, date, appointment_type, userId):
       Item={
             # 'Date': datetime(2018, 1, 1),
             # 'Create_Time': "1700"
-            'ApptID' : appointment_type +"_"+ userId, #partition key
+            'ApptID' : userId, #+"_"+ appointment_type, #partition key
             'UID': userId,
             'ApptDate': date,
             'ApptTime': appointment_time,
