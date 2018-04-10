@@ -14,12 +14,12 @@ import random
 import logging
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG) 
+logger.setLevel(logging.DEBUG) #The log level identifies the type of log, such as [INFO], [ERROR], and [DEBUG].
 
-def my_logging_handler(event, context):
-    logger.info('got event{}'.format(event))
-    logger.error('something went wrong')
-    return 'Hello from Lambda!'  
+# def my_logging_handler(event, context):
+#     logger.info('got event{}'.format(event))
+#     logger.error('something went wrong')
+#     return 'Hello from Lambda!'  
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamoTable = dynamodb.Table('ApptBotTime')
@@ -82,8 +82,14 @@ def check_appointment(intent_request):
     appointment_type = intent_request['currentIntent']['slots']['AppointmentType']
     output_session_attributes = intent_request['sessionAttributes'] if intent_request[
                                                                            'sessionAttributes'] is not None else {}
-    userId = 'Jason'  # intent_request['userId']
-
+    booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
+    intendID = intent_request['userId']
+    
+    if intendID is not None:
+        userId = intent_request['userId']
+    else: 
+        userId = 'Jason'
+          
     try:
         response = dynamoTable.get_item(
             Key={
@@ -108,16 +114,23 @@ def check_appointment(intent_request):
         Appointment_date = Js_response['Item']['ApptDate']
         Appointment_time = Js_response['Item']['ApptTime']
         appointment_type = Js_response['Item']['ApptType']
+        # print('Your {} appointment is on {} at {}'.format(Appointment_type,Appointment_date,Appointment_time))
         print(json.dumps(response, indent=4, cls=DecimalEncoder))
         print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
                                                            Js_response['Item']['ApptTime']))
     
+        # # dumps booking_map availabilities
+        # print(json.dumps(booking_map[date], indent=4, cls=DecimalEncoder))
+    
+        # logger.debug(
+        # 'Booking Map={}'.format(booking_map[date]))
+        
+        # return appointment information
         return close(
             output_session_attributes,
             'Fulfilled',
             {
                 'contentType': 'PlainText',
-                # 'content': 'Okay, I have booked your appointment.  We will see you at {} on {}'.format(build_time_output_string(appointment_time), date)
                 'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
             }
         )
@@ -140,8 +153,6 @@ def dispatch(intent_request):
     # SL
     if intent_name == 'MakeAppointmentQuery':
         return check_appointment(intent_request)
-    # if intent_name == 'MakeAppointment':
-    #     return make_appointment(intent_request)
     raise Exception('Intent with name ' + intent_name + ' not supported')
 
 
@@ -154,7 +165,7 @@ def lambda_handler(event, context):
     The JSON body of the request is provided in the event slot.
     """
     # By default, treat the user request as coming from the America/New_York time zone.
-    os.environ['TZ'] = 'America/New_York'
+    os.environ['TZ'] = 'America/Vancouver' #America/New_York'
     time.tzset()
     logger.debug('[DEBUG] QUERY |||||')
     logger.debug('event.bot.name={}'.format(event['bot']['name']))
