@@ -16,11 +16,6 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG) #The log level identifies the type of log, such as [INFO], [ERROR], and [DEBUG].
 
-# def my_logging_handler(event, context):
-#     logger.info('got event{}'.format(event))
-#     logger.error('something went wrong')
-#     return 'Hello from Lambda!'  
-
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamoTable = dynamodb.Table('ApptBotTime')
 
@@ -107,37 +102,23 @@ def delete_appointment(intent_request):
         
             # load the json to a string
             Js_response = json.loads(json_str)
-        
-            # Appointment_date = Js_response['Item']['ApptDate']
-            # Appointment_time = Js_response['Item']['ApptTime']
-            # appointment_type = Js_response['Item']['ApptType']
     
             print('[DEBUG]' )
             print(json.dumps(response, indent=4, cls=DecimalEncoder))
-            # print('Your {} appointment on {} at {} is cancelled.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
-                                                            #   Js_response['Item']['ApptTime']))
+            
             print('Your appointment is cancelled.')
             print(booking_map)
         
-        
-            # # dumps booking_map availabilities
-            # print(json.dumps(booking_map[date], indent=4, cls=DecimalEncoder))
-        
-            # logger.debug(
-            # 'Booking Map={}'.format(booking_map[date]))
-            
             # return appointment information
             return close(
                 output_session_attributes,
                 'Fulfilled',
                 {
                     'contentType': 'PlainText',
-                    # 'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
                     'content': 'Your appointment is canceled.'
                 }
             )
     else: 
-        # userId = 'Jason'
         return close(
             output_session_attributes,
             'Fulfilled',
@@ -146,9 +127,7 @@ def delete_appointment(intent_request):
                 'content': 'We cannot find your appointment. Please book a new appointment. '
             }
         )
-          
-    
-
+         
 
 """ --- Intents --- """
 
@@ -164,7 +143,6 @@ def dispatch(intent_request):
     intent_name = intent_request['currentIntent']['name']
 
     # Dispatch to your bot's intent handlers
-    # SL
     if intent_name == 'MakeAppointmentCancel':
         return delete_appointment(intent_request)
     raise Exception('Intent with name ' + intent_name + ' not supported')
@@ -178,8 +156,8 @@ def lambda_handler(event, context):
     Route the incoming request based on intent.
     The JSON body of the request is provided in the event slot.
     """
-    # By default, treat the user request as coming from the America/New_York time zone.
-    os.environ['TZ'] = 'America/Vancouver' #America/New_York'
+    # Changed time zone to Vancouver, Candad
+    os.environ['TZ'] = 'America/Vancouver' 
     time.tzset()
     logger.debug('[DEBUG] CANCEL |||||')
     logger.debug('event.bot.name={}'.format(event['bot']['name']))
