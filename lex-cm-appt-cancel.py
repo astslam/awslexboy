@@ -16,6 +16,11 @@ import logging
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG) #The log level identifies the type of log, such as [INFO], [ERROR], and [DEBUG].
 
+# def my_logging_handler(event, context):
+#     logger.info('got event{}'.format(event))
+#     logger.error('something went wrong')
+#     return 'Hello from Lambda!'  
+
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamoTable = dynamodb.Table('ApptBotTime')
 
@@ -63,8 +68,27 @@ def try_ex(func):
 
 
 """ --- Functions that control the bot's behavior --- """
+def check_appointment(intendID):
+    response = dynamoTable.get_item(
+            Key={
+                # 'UID' : userId                ### Apptbot key UID
+                'ApptID': intendID                ### Apptbottime key ApptID
+            }
+        )
+    # dumps the json object into an element
+    json_str = json.dumps(response)
 
-
+    # load the json to a string
+    Js_response = json.loads(json_str)
+    
+    print(json_str.find("Item"))
+    
+    if json_str.find("ApptID") >0: 
+        return "TRUE"
+        print(json_str.find("Item"))
+    else: 
+        return "FALSE" # no appointment"
+        print(json_str.find("Item"))
 def delete_appointment(intent_request):
     """
     Performs dialog management and fulfillment for booking a dentists appointment.
@@ -79,55 +103,119 @@ def delete_appointment(intent_request):
                                                                            'sessionAttributes'] is not None else {}
     booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
     intendID = intent_request['userId']
-    if intendID is not None:
-        userId = intent_request['userId']
-        
-        try:
-            response = dynamoTable.delete_item(
-                Key={
-                    # 'UID' : userId                ### Apptbot key UID
-                    'ApptID': userId                ### Apptbottime key ApptID
-                }
-            )
-    
-        except ClientError as e:
-            if e.response['Error']['Code'] == "ConditionalCheckFailedException":
-                print(e.response['Error']['Message'])
-            else:
-                raise
-        else:
-    
-            # dumps the json object into an element
-            json_str = json.dumps(response)
-        
-            # load the json to a string
-            Js_response = json.loads(json_str)
-    
-            print('[DEBUG]' )
-            print(json.dumps(response, indent=4, cls=DecimalEncoder))
-            
-            print('Your appointment is cancelled.')
-            print(booking_map)
-        
-            # return appointment information
-            return close(
+
+    if check_appointment(intendID) == "FALSE": 
+    	return close(
                 output_session_attributes,
                 'Fulfilled',
                 {
                     'contentType': 'PlainText',
-                    'content': 'Your appointment is canceled.'
+                    'content': 'We cannot find your appointment. Please book a new appointment. '
                 }
             )
     else: 
+        response = dynamoTable.delete_item(
+                Key={
+                    # 'UID' : userId                ### Apptbot key UID
+                    'ApptID': intendID                ### Apptbottime key ApptID
+                }
+            )
         return close(
             output_session_attributes,
             'Fulfilled',
             {
                 'contentType': 'PlainText',
-                'content': 'We cannot find your appointment. Please book a new appointment. '
+                'content': 'Your appointment is canceled.'
             }
         )
-         
+        
+        # except ClientError as e:
+        #     if e.response['Error']['Code'] == "ConditionalCheckFailedException":
+        #         print(e.response['Error']['Message'])
+        #     else:
+        #         raise
+        # else:
+        #     # dumps the json object into an element
+        #     json_str = json.dumps(response)
+        
+        #     # load the json to a string
+        #     Js_response = json.loads(json_str)
+    
+        #     print('[DEBUG] ||| Appointment CANCEL |||')
+        #     print(json.dumps(response, indent=4, cls=DecimalEncoder))
+
+        #     # test
+        #     print('[DEBUG] ||| booking_map ||| ', json.dumps(output_session_attributes)) 
+        #     print('[DEBUG] |||', output_session_attributes)             
+        
+        #     # return appointment information
+        #     return close(
+        #         output_session_attributes,
+        #         'Fulfilled',
+        #         {
+        #             'contentType': 'PlainText',
+        #             'content': 'Your appointment is canceled.'
+        #         }
+        #     )
+            
+                
+                
+                
+        
+    
+    # if intendID is not None:
+    #     userId = intent_request['userId']
+        
+    #     try:
+    #         response = dynamoTable.delete_item(
+    #             Key={
+    #                 # 'UID' : userId                ### Apptbot key UID
+    #                 'ApptID': userId                ### Apptbottime key ApptID
+    #             }
+    #         )
+    
+    #     except ClientError as e:
+    #         if e.response['Error']['Code'] == "ConditionalCheckFailedException":
+    #             print(e.response['Error']['Message'])
+    #         else:
+    #             raise
+    #     else:
+    
+    #         # dumps the json object into an element
+    #         json_str = json.dumps(response)
+        
+    #         # load the json to a string
+    #         Js_response = json.loads(json_str)
+    
+    #         print('[DEBUG] ||| Appointment CANCEL |||')
+    #         print(json.dumps(response, indent=4, cls=DecimalEncoder))
+
+    #         # test
+    #         print('[DEBUG] ||| booking_map ||| ', json.dumps(output_session_attributes)) 
+    #         print('[DEBUG] |||', output_session_attributes)             
+        
+    #         # return appointment information
+    #         return close(
+    #             output_session_attributes,
+    #             'Fulfilled',
+    #             {
+    #                 'contentType': 'PlainText',
+    #                 'content': 'Your appointment is canceled.'
+    #             }
+    #         )
+    # else: 
+    #     # userId = 'Jason'
+    #     return close(
+    #         output_session_attributes,
+    #         'Fulfilled',
+    #         {
+    #             'contentType': 'PlainText',
+    #             'content': 'We cannot find your appointment. Please book a new appointment. '
+    #         }
+    #     )
+          
+    
+
 
 """ --- Intents --- """
 
@@ -143,6 +231,7 @@ def dispatch(intent_request):
     intent_name = intent_request['currentIntent']['name']
 
     # Dispatch to your bot's intent handlers
+    # SL
     if intent_name == 'MakeAppointmentCancel':
         return delete_appointment(intent_request)
     raise Exception('Intent with name ' + intent_name + ' not supported')
@@ -156,8 +245,8 @@ def lambda_handler(event, context):
     Route the incoming request based on intent.
     The JSON body of the request is provided in the event slot.
     """
-    # Changed time zone to Vancouver, Candad
-    os.environ['TZ'] = 'America/Vancouver' 
+    # By default, treat the user request as coming from the America/New_York time zone.
+    os.environ['TZ'] = 'America/Vancouver' #America/New_York'
     time.tzset()
     logger.debug('[DEBUG] CANCEL |||||')
     logger.debug('event.bot.name={}'.format(event['bot']['name']))
