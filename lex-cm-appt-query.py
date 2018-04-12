@@ -85,8 +85,12 @@ def check_appointment(intent_request):
     booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
     intendID = intent_request['userId']
     
+    # https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#BatchOperations
+    
+       
     if intendID is not None:
         userId = intent_request['userId']
+    # test result
     else: 
         userId = 'Jason'
           
@@ -110,30 +114,65 @@ def check_appointment(intent_request):
     
         # load the json to a string
         Js_response = json.loads(json_str)
-    
-        Appointment_date = Js_response['Item']['ApptDate']
-        Appointment_time = Js_response['Item']['ApptTime']
-        appointment_type = Js_response['Item']['ApptType']
-        # print('Your {} appointment is on {} at {}'.format(Appointment_type,Appointment_date,Appointment_time))
+
+        print('[DEBUG] ||| Json response |||')
         print(json.dumps(response, indent=4, cls=DecimalEncoder))
-        print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
-                                                           Js_response['Item']['ApptTime']))
+        # print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
+        #                                                   Js_response['Item']['ApptTime']))
     
         # # dumps booking_map availabilities
         # print(json.dumps(booking_map[date], indent=4, cls=DecimalEncoder))
     
-        # logger.debug(
-        # 'Booking Map={}'.format(booking_map[date]))
-        
         # return appointment information
-        return close(
-            output_session_attributes,
-            'Fulfilled',
-            {
-                'contentType': 'PlainText',
-                'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
+        if Js_response['Item']['ApptID'] == intendID: 
+            
+            # print('Your {} appointment is on {} at {}'.format(Appointment_type,Appointment_date,Appointment_time))
+            print(json.dumps(response, indent=4, cls=DecimalEncoder))
+            # print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
+                                                            #   Js_response['Item']['ApptTime']))
+            return close(
+                output_session_attributes,
+                'Fulfilled',
+                {
+                    'contentType': 'PlainText',
+                    'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
+                }
+            )
+        else: 
+            return close(
+                output_session_attributes,
+                'Fulfilled',
+                {
+                    'contentType': 'PlainText',
+                    'content': 'No appointment found'
+                }
+            )
+
+#   try :
+        response = dynamoTable.get_item(
+            Key={
+                # 'UID' : userId                ### Apptbot key UID
+                'ApptID': userId                ### Apptbottime key ApptID
             }
         )
+            
+#         if (response != null) {
+#             System.out.println("Result: " + response);
+#              return close(
+#                 output_session_attributes,
+#                 'Fulfilled',
+#                 {
+#                     'contentType': 'PlainText',
+#                     'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
+#                 }
+#             )
+#         } else { 
+#             //No such item exists in the table
+#             System.out.println("Item not found");
+#         }
+    
+
+
 
 
 """ --- Intents --- """
