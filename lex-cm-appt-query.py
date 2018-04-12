@@ -3,6 +3,8 @@ import boto3
 import json
 import decimal
 from boto3.dynamodb.conditions import Key, Attr
+from botocore.exceptions import ClientError
+
 
 import json
 import dateutil.parser
@@ -15,11 +17,6 @@ import logging
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG) #The log level identifies the type of log, such as [INFO], [ERROR], and [DEBUG].
-
-# def my_logging_handler(event, context):
-#     logger.info('got event{}'.format(event))
-#     logger.error('something went wrong')
-#     return 'Hello from Lambda!'  
 
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 dynamoTable = dynamodb.Table('ApptBotTime')
@@ -82,98 +79,61 @@ def check_appointment(intent_request):
     appointment_type = intent_request['currentIntent']['slots']['AppointmentType']
     output_session_attributes = intent_request['sessionAttributes'] if intent_request[
                                                                            'sessionAttributes'] is not None else {}
-    booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
+    # booking_map = json.loads(try_ex(lambda: output_session_attributes['bookingMap']) or '{}')
     intendID = intent_request['userId']
     
-    # https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Programming.Errors.html#BatchOperations
-    
-       
-    if intendID is not None:
-        userId = intent_request['userId']
-    # test result
-    else: 
-        userId = 'Jason'
-          
+    # Query appointment 
     try:
         response = dynamoTable.get_item(
             Key={
                 # 'UID' : userId                ### Apptbot key UID
-                'ApptID': userId                ### Apptbottime key ApptID
+                'ApptID': intendID                ### Apptbottime key ApptID
             }
         )
-
-    except ClientError as e:
-        if e.response['Error']['Code'] == "ConditionalCheckFailedException":
-            print(e.response['Error']['Message'])
-        else:
-            raise
-    else:
-
         # dumps the json object into an element
         json_str = json.dumps(response)
     
         # load the json to a string
         Js_response = json.loads(json_str)
-
-        print('[DEBUG] ||| Json response |||')
+        
         print(json.dumps(response, indent=4, cls=DecimalEncoder))
-        # print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
-        #                                                   Js_response['Item']['ApptTime']))
-    
-        # # dumps booking_map availabilities
-        # print(json.dumps(booking_map[date], indent=4, cls=DecimalEncoder))
-    
-        # return appointment information
-        if Js_response['Item']['ApptID'] == intendID: 
-            
-            # print('Your {} appointment is on {} at {}'.format(Appointment_type,Appointment_date,Appointment_time))
-            print(json.dumps(response, indent=4, cls=DecimalEncoder))
-            # print('Your {} appointment is on {} at {}.'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],
-                                                            #   Js_response['Item']['ApptTime']))
+        
+        return close(
+            output_session_attributes,
+            'Fulfilled',
+            {
+                'contentType': 'PlainText',
+                'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
+            }
+        )
+        
+    except ClientError as e:
+        if e.response['Error']['Code'] == "ConditionalCheckFailedException":
+            print(e.response['Error']['Message'])
+        else:
+            raise
+    except KeyError as e:
+        if e != 'Item': 
+            print('KeyError: ', e)
             return close(
                 output_session_attributes,
                 'Fulfilled',
                 {
                     'contentType': 'PlainText',
-                    'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
+                    'content': 'Sorry, we cannot find your appointment. '
                 }
             )
         else: 
-            return close(
-                output_session_attributes,
-                'Fulfilled',
-                {
-                    'contentType': 'PlainText',
-                    'content': 'No appointment found'
-                }
-            )
-
-#   try :
-        response = dynamoTable.get_item(
-            Key={
-                # 'UID' : userId                ### Apptbot key UID
-                'ApptID': userId                ### Apptbottime key ApptID
+            raise
+    else: 
+        return close(
+            output_session_attributes,
+            'Fulfilled',
+            {
+                'contentType': 'PlainText',
+                'content': 'No appointment found'
             }
         )
-            
-#         if (response != null) {
-#             System.out.println("Result: " + response);
-#              return close(
-#                 output_session_attributes,
-#                 'Fulfilled',
-#                 {
-#                     'contentType': 'PlainText',
-#                     'content': 'Your {} appointment is on {} at {}'.format(Js_response['Item']['ApptType'], Js_response['Item']['ApptDate'],Js_response['Item']['ApptTime'])
-#                 }
-#             )
-#         } else { 
-#             //No such item exists in the table
-#             System.out.println("Item not found");
-#         }
-    
-
-
-
 
 """ --- Intents --- """
 
