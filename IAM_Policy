@@ -8,7 +8,7 @@
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
             ],
-            "Resource": "arn:aws:logs:us-east-1:673558773427:log-group:/aws/lambda/lex-cm-appointment-py:*"
+            "Resource": "YOUR-ARN:*"
         },
         {
             "Sid": "VisualEditor1",
@@ -17,13 +17,13 @@
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
             ],
-            "Resource": "arn:aws:logs:us-east-1:673558773427:log-group:/aws/lambda/lex-cm-appt-query:*"
+            "Resource": "YOUR-ARN:*"
         },
         {
             "Sid": "VisualEditor2",
             "Effect": "Allow",
             "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:us-east-1:673558773427:*"
+            "Resource": "YOUR-ARN:*"
         }
     ]
 }
